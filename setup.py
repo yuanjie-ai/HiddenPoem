@@ -49,5 +49,5 @@ setup(
         'Topic :: Software Development :: Libraries'
     ],
 
-    install_requires=get_requirements
+    install_requires=get_requirements()
 )
