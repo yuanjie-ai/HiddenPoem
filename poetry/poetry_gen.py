@@ -16,8 +16,11 @@ opt = Config()
 
 
 class PoetryGen(object):
-    @staticmethod
-    def gen(**kwargs):
+
+    def __init__(self, color_print=True):
+        self.color_print = color_print
+
+    def gen(self, **kwargs):
         for i in kwargs.items():
             setattr(opt, *i)
         data, word2ix, ix2word = get_data(opt)
@@ -28,8 +31,12 @@ class PoetryGen(object):
         model.load_state_dict(state_dict)
         start_words = opt.start_words.replace(',', '，').replace('.', '。').replace('?', '？').replace('!', '！')
         result = gen_acrostic(opt, model, start_words, ix2word, word2ix, opt.prefix_words)
-
-        return '\n'.join([result[idx: idx + 7] for idx in range(0, len(result), 7)])
+        result = '\n'.join([result[idx: idx + 7] for idx in range(0, len(result), 7)])
+        if self.color_print:
+            for idx in range(0, len(result), 8):
+                print('\033[94m%s\033[0m' % result[idx] + result[idx + 1: idx + 7])
+        else:
+            return result
 
 
 if __name__ == '__main__':

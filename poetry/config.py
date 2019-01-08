@@ -24,7 +24,7 @@ class Config(object):
     category = 'poet.tang'  # 类别，唐诗还是宋诗歌(poet.song)
     model_path = get_module_path('./checkpoints/tang_w.pth')  # 预训练模型路径
     prefix_words = "爆竹声中一岁除，春风送暖入屠苏。"  # 不是诗歌的组成部分，用来控制生成诗歌的意境
-    start_words = '闲云潭影日悠悠'  # 诗歌开始
+    start_words = '小米春节藏头诗'  # 诗歌开始
     acrostic = False  # 是否是藏头诗
     model_prefix = 'checkpoints/w'  # 模型保存路径
     max_gen_len = 256

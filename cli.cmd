@@ -1,1 +1,0 @@
-python -m poetry --start_words '小米欢迎您'
