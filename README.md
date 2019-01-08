@@ -1,7 +1,7 @@
 - [**_Requirement_**][0]
 - **Install**
 ```bash
-pip install git+https://github.com/Jie-Yuan/pytorch-poetry.git
+pip install poetry
 ```
 - **Shell**
 
