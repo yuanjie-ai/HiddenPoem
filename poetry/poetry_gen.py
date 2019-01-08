@@ -8,7 +8,7 @@ __mtime__ = '19-1-7'
 
 import torch
 from .poetry_model import PoetryModel
-from . import gen_acrostic
+from ..poetry import gen_acrostic
 from .data import get_data
 from .config import Config
 
