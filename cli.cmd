@@ -1,1 +1,1 @@
-python -m gen --start_words '小米欢迎您'
+python -m poetry --start_words '小米欢迎您'
