@@ -7,56 +7,48 @@ __mtime__ = '19-1-7'
 """
 import numpy as np
 import torch
+
 __chars = {237,
-         320,
-         565,
-         569,
-         1115,
-         1548,
-         1592,
-         1727,
-         2205,
-         2509,
-         2707,
-         2862,
-         3057,
-         3224,
-         3257,
-         3302,
-         3357,
-         3435,
-         3450,
-         3653,
-         4160,
-         4546,
-         4637,
-         4697,
-         5008,
-         5250,
-         5380,
-         5423,
-         6025,
-         6110,
-         6542,
-         7057,
-         7066,
-         7360,
-         7435,
-         8290,
-         8291,
-         8292}
+           320,
+           565,
+           569,
+           1115,
+           1548,
+           1592,
+           1727,
+           2205,
+           2509,
+           2707,
+           2862,
+           3057,
+           3224,
+           3257,
+           3302,
+           3357,
+           3435,
+           3450,
+           3653,
+           4160,
+           4546,
+           4637,
+           4697,
+           5008,
+           5250,
+           5380,
+           5423,
+           6025,
+           6110,
+           6542,
+           7057,
+           7066,
+           7360,
+           7435,
+           8290,
+           8291,
+           8292}
 
 
 def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
-    """
-    生成藏头诗
-    start_words : u'深度学习'
-    生成：
-    深木通中岳，青苔半日脂。
-    度山分地险，逆浪到南巴。
-    学道兵犹毒，当时燕不移。
-    习根通古岸，开镜出清羸。
-    """
     results = ''
     start_word_len = len(start_words)
     input = (torch.Tensor([word2ix['<START>']]).view(1, 1).long())
@@ -73,14 +65,14 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
     for i in range(opt.max_gen_len):
         output, hidden = model(input, hidden)
         top_indexs = output.data[0].topk(40)[1].numpy()
-        for top_index in top_indexs:
-            if top_index not in __chars:
-                break
-
+        # for top_index in top_indexs:
+        #     if top_index not in __chars:
+        #         break
+        l = list(set(top_indexs) - __chars)[:10]
+        np.random.shuffle(l)
+        top_index = l[0]
         w = ix2word[top_index]
 
-        # if (pre_word in {'。', '！', '？', '<START>'}):  # '，'
-        # 如果遇到句号，藏头的词送进去生成
         if i % 7 == 0:
             if index == start_word_len:
                 # 如果生成的诗歌已经包含全部藏头的词，则结束
@@ -98,4 +90,3 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
         results += w if i % 7 else w
         # results.append(w if i % 7 else '\n'+w)
     return results
-
