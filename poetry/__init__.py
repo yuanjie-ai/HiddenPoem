@@ -7,7 +7,8 @@ __mtime__ = '19-1-7'
 """
 import numpy as np
 import torch
-chars = {237,
+from .poetry_gen import PoetryGen
+__chars = {237,
          320,
          565,
          569,
@@ -74,7 +75,7 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
         output, hidden = model(input, hidden)
         top_indexs = output.data[0].topk(40)[1].numpy()
         for top_index in top_indexs:
-            if top_index not in chars:
+            if top_index not in __chars:
                 break
 
         w = ix2word[top_index]
@@ -98,3 +99,4 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
         results += w if i % 7 else w
         # results.append(w if i % 7 else '\n'+w)
     return results
+
