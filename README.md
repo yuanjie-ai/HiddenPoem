@@ -1,5 +1,7 @@
 - **Shell**
-```python -m poetry --start_words '小米藏头诗```
+```
+python -m poetry --start_words '小米藏头诗'
+```
 
 - **Python**
 ```python
