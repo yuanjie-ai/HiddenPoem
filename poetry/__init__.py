@@ -7,7 +7,6 @@ __mtime__ = '19-1-7'
 """
 import numpy as np
 import torch
-from .poetry_gen import PoetryGen
 __chars = {237,
          320,
          565,
