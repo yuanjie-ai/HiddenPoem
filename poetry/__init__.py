@@ -7,7 +7,6 @@ __mtime__ = '19-1-7'
 """
 import numpy as np
 import torch
-from .poetry_gen import PoetryGen
 chars = {237,
          320,
          565,
@@ -58,7 +57,7 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
     学道兵犹毒，当时燕不移。
     习根通古岸，开镜出清羸。
     """
-    results = []
+    results = ''
     start_word_len = len(start_words)
     input = (torch.Tensor([word2ix['<START>']]).view(1, 1).long())
 
@@ -96,6 +95,6 @@ def gen_acrostic(opt, model, start_words, ix2word, word2ix, prefix_words=None):
             # 否则的话，把上一次预测是词作为下一个词输入
             input = (input.data.new([word2ix[w]])).view(1, 1)
 
-        results.append(w if i % 7 else w)
+        results += w if i % 7 else w
         # results.append(w if i % 7 else '\n'+w)
     return results
