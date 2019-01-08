@@ -19,7 +19,7 @@ def get_requirements():
         with open(_) as f:
             return f.read().split()
 
-
+print(get_requirements())
 setup(
     name='poetry',
     version='0.0.1',
