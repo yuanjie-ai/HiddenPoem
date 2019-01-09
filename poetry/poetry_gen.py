@@ -16,7 +16,7 @@ opt = Config()
 
 data, word2ix, ix2word = get_data(opt)
 model = PoetryModel(len(word2ix), 128, 256)
-# print(model)
+print(model)
 map_location = lambda s, l: s
 state_dict = torch.load(opt.model_path, map_location=map_location)
 model.load_state_dict(state_dict)
