@@ -5,6 +5,10 @@ __title__ = 'main'
 __author__ = 'JieYuan'
 __mtime__ = '19-1-8'
 """
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 import socket
 
 socket.SO_REUSEPORT = 15
@@ -19,20 +23,23 @@ import numpy as np
 import random
 import requests
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 
-chars = '神圣贤文武成康献懿元章僖釐景宣明昭正敬恭庄肃穆戴翼襄烈桓威勇毅克庄圉御魏安定简贞节白匡质靖真顺思考皓显和元高光大英睿博宪坚孝忠惠德仁智慎礼义周敏信达宽理凯清直钦益良度类基慈齐深温让密厚纯勤谦友祁广淑俭灵荣厉比絜舒贲逸退讷偲逑懋宜哲察通仪经庇协端休悦绰容确恒熙洽绍世果太'
 chinese = re.compile('[^\u4e00-\u9fa5]+')
 
 p = PoetryGen(False)
 
+get_unique = lambda iterable: list(OrderedDict.fromkeys(list(iterable)))
 
-def get_poetry(corpus):
+
+def get_poetry(corpus, zishu=7):
     url = "http://www.shicimingju.com/cangtoushi/index.html"
-    text = requests.get(url, {'kw': corpus, 'zishu': 7}).text
+    text = requests.get(url, {'kw': corpus, 'zishu': zishu}, timeout=1).text
     soup = BeautifulSoup(text, 'lxml')
     l = list(map(lambda x: x.text.split(), soup.find_all('div', class_='cangtoushi-item')))
-    np.random.shuffle(l)
-    return chinese.sub(random.sample(chars, 1), l[0])
+    if l:
+        np.random.shuffle(l)
+        return l[0]
 
 
 app = Vibora()
@@ -41,24 +48,38 @@ app = Vibora()
 @app.route('/poetry/getpoem/<corpus>', methods=['GET'])
 async def page(corpus: str):
     rst = {}
-    rst['time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    rst['time'] = str(datetime.now())
     corpus = parse.unquote(corpus)
     corpus = chinese.sub('', corpus)
+    corpus_unique = get_unique(corpus)
+    try:
+        if 2 < len(corpus) < 13 and len(corpus_unique) > 2:
+            # 判断重复字
+            if len(set(corpus)) < len(corpus):
+                idxs = set(range(len(corpus))) - set(np.unique(list(corpus), True)[1])  # 重复字索引
+                poem = get_poetry(''.join(corpus_unique))
 
-    if 1 < len(corpus) < 13:
-        if len(set(corpus[:6])) < 6:
-            rst['poem'] = p.gen(start_words=corpus).split()
+                if poem:
+                    for idx in idxs:
+                        poem.insert(idx, p.gen(start_words=corpus[idx]).split())
+                else:
+                    poem = p.gen(start_words=corpus).split()
+
+                rst['poem'] = poem
+                rst['warning'] = '含重复字: 模型作诗'
+            else:
+                poem = get_poetry(corpus)
+                rst['poem'] = poem if poem else p.gen(start_words=corpus).split()
+                rst['warning'] = '无重复字: 原诗优先'
         else:
-            try:
-                rst['poem'] = get_poetry(corpus[:6]) + p.gen(start_words=corpus[6:]).split()
-            except Exception as e:
-                print(e)
-                rst['poem'] = p.gen(start_words=corpus).split()
-        rst['warning'] = ''
-    else:
-        rst['poem'] = ''
-        rst['warning'] = 'chinese-length not in (1, 13)'
-    return JsonResponse([rst])
+            rst['poem'] = p.gen(start_words=corpus).split()
+            rst['warning'] = '字数不足: 模型作诗'
+
+    except Exception as e:
+        rst['poem'] = p.gen(start_words=corpus).split()
+        rst['warning'] = str(e)
+    finally:
+        return JsonResponse([rst])
 
 
 if __name__ == '__main__':
