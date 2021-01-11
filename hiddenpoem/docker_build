@@ -1,9 +1,0 @@
-# Common
-mkdir -p release/
-cp -r * /home/work
-
-# Install
-pip install -U -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ --default-timeout=600 --no-cache-dir
-
-# chmod
-chmod -R 777 /home/work
